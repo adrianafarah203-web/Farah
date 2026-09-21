@@ -1,74 +1,86 @@
 #include <iostream>
 #include <iomanip>
-#include <string>
-
 using namespace std;
 
-double calculateFine(int daysBorrowed);
-void processTransaction(int transactionType, int &bookQuantity);
+
+int getcalculateoverduedays(int returnDate,int borrowingDate,int borrowingMonth, int returnMonth) {
+	int allowedDays=14;
+	int actualDays=(returnMonth-borrowingMonth)*30 +(returnDate-borrowingDate);
+	int overdueDays;
+
+	if(actualDays>allowedDays) {
+		return actualDays-allowedDays;
+
+	} else
+
+		return 0;
+
+}
+
+
+int getborrowBook(int availableQuantity) {
+
+	if(availableQuantity>0) {
+		cout<< "Book is available for borrowing."<<endl;
+		availableQuantity=availableQuantity-1;
+		cout<<"Borrow Successful"<<endl;
+	} else
+		cout<< "Borrow Failed: Book Out of Stock"<<endl;
+	return availableQuantity;
+
+}
+int getreturnBook(int availableQuantity) {
+	availableQuantity=availableQuantity+1;
+	cout<<"Return Successful"<<endl;
+	return availableQuantity;
+}
 
 int main() {
-    string memberID, bookID;
-    int transactionType, bookQuantity;
+	string memberID,BookID,transactionType;
+	int borrowingDate,returnDate,availableQuantity,overdueDays,borrowingMonth,returnMonth;
+	double fineperDay=1.50,overduefine=0.00;
 
-    cout << "Enter Member ID : ";
-    cin >> memberID;
-    cout << "Enter Book ID : ";
-    cin >> bookID;
-    cout << "Enter Available Quantity: ";
-    cin >> bookQuantity;
-    cout << "\nSelect Transaction Type (1 = Borrow, 2 = Return): ";
-    cin >> transactionType;
+	cout <<fixed <<setprecision(2);
 
-    processTransaction(transactionType, bookQuantity);
+	cout <<"Enter member ID: ";
+	cin >>memberID;
+	cout << "Enter Book ID: ";
+	cin >> BookID;
+	cout <<"Enter transaction type (Borrow/Return): ";
+	cin >>transactionType;
+	cout << "Enter available quantity: ";
+	cin >>availableQuantity;
 
-    return 0;
+
+	if (transactionType=="Borrow") {
+		availableQuantity=getborrowBook(availableQuantity);
+	} else if (transactionType=="Return") {
+
+		cout <<"Enter borrow month: ";
+		cin >> borrowingMonth;
+		cout <<"Enter borrow date: ";
+		cin >> borrowingDate;
+		cout <<"Enter return month: ";
+		cin >> returnMonth;
+		cout <<"Enter return date: ";
+		cin >> returnDate;
+		cout << endl;
+
+		availableQuantity=getreturnBook(availableQuantity);
+		overdueDays=getcalculateoverduedays(returnDate,borrowingDate,borrowingMonth,returnMonth);
+		overduefine = overdueDays*fineperDay;
+		cout <<"Updated Book Quantity: "<< overduefine <<endl;
+
+	} else {
+		cout << endl;
+		cout <<"Invalid transaction type."<<endl;
+	}
+	cout << endl;
+
+	cout <<"Overdue Fine: RM" << overduefine<<endl;
+	cout <<endl;
+
+
+
+	return 0;
 }
-
-void processTransaction(int transactionType, int &bookQuantity) {
-    int daysBorrowed = 0;
-    double fine = 0.0;
-
-    if (transactionType == 1) { // Borrow
-        if (bookQuantity > 0) {
-            bookQuantity--;
-            cout << "Status             : Borrowing Successful" << endl;
-            cout << "Updated Quantity   : " << bookQuantity << endl;
-            cout << "Overdue Fine       : RM 0.00" << endl;
-        } else {
-            cout << "Status             : Failed (Book Out of Stock)" << endl;
-            cout << "Updated Quantity   : " << bookQuantity << endl;
-        }
-    } 
-    else if (transactionType == 2) { 
-        cout << "Enter Number of Days Borrowed: ";
-        cin >> daysBorrowed;
-        bookQuantity++;
-        fine = calculateFine(daysBorrowed);
-        cout << "\nStatus             : Return Successful" << endl;
-        cout << "Updated Quantity   : " << bookQuantity << endl;
-
-        if (fine > 0) {
-            int overdueDays = daysBorrowed - 7;
-            cout << "Return Condition   : OVERDUE " << overdueDays << " day" << endl;
-            cout << "Overdue Fine       : RM " << fixed << setprecision(2) << fine << endl;
-        } else {
-            cout << "Return Condition   : On Time" << endl;
-            cout << "Overdue Fine       : RM 0.00" << endl;
-        }
-    } 
-    else {
-        cout << "Invalid Transaction Type!" << endl;
-    }
-}
-
-double calculateFine(int daysBorrowed) {
-    const double FINE_PER_DAY = 0.50; 
-    const int ALLOWED_DAYS = 14;
-
-    if (daysBorrowed > ALLOWED_DAYS) {
-        int overdueDays = daysBorrowed - ALLOWED_DAYS;
-        return overdueDays * FINE_PER_DAY;
-    }
-    
-    return 0.0;
