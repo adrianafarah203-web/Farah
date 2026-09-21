@@ -35,6 +35,16 @@ int getreturnBook(int availableQuantity) {
 	return availableQuantity;
 }
 
+int getDaysInMonth(int month) {
+	if (month==2) {
+		return 28;
+	} else if (month ==4||month ==6||month ==9||month==11) {
+		return 30;
+	} else {
+		return 31;
+	}
+}
+
 int main() {
 	string memberID,BookID,transactionType;
 	int borrowingDate,returnDate,availableQuantity,overdueDays,borrowingMonth,returnMonth;
@@ -60,16 +70,25 @@ int main() {
 		cin >> borrowingMonth;
 		cout <<"Enter borrow date: ";
 		cin >> borrowingDate;
+
+		if(borrowingDate <1 || borrowingDate >getDaysInMonth(borrowingMonth)) {
+			cout << "Invalid borrowing date." <<endl;
+			return 0;
+		}
 		cout <<"Enter return month: ";
 		cin >> returnMonth;
 		cout <<"Enter return date: ";
 		cin >> returnDate;
-		cout << endl;
+
+		if (returnDate < 1 || returnDate > getDaysInMonth(returnMonth)) {
+			cout << "Invalid return date."<<endl;
+			return 0;
+		}
 
 		availableQuantity=getreturnBook(availableQuantity);
 		overdueDays=getcalculateoverduedays(returnDate,borrowingDate,borrowingMonth,returnMonth);
 		overduefine = overdueDays*fineperDay;
-		cout <<"Updated Book Quantity: "<< overduefine <<endl;
+		cout <<"Updated Book Quantity: "<< availableQuantity <<endl;
 
 	} else {
 		cout << endl;
