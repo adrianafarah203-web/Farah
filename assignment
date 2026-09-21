@@ -1,80 +1,75 @@
 #include <iostream>
 #include <iomanip>
+#include <string>
+
 using namespace std;
 
-
-int calculateoverduedays(int returnDate,int borrowingDate) {
-	int allowedDays=14;
-	int actualDays=returnDate-borrowingDate;
-	int overdueDays;
-
-	if(actualDays>allowedDays) {
-		overdueDays=actualDays-allowedDays;
-	} else
-		overdueDays=0;
-
-	return overdueDays;
-
-}
-
-
-int borrowBook(int availableQuantity) {
-
-	if(availableQuantity>0) {
-		cout<< "Book is available for borrowing."<<endl;
-		availableQuantity=availableQuantity-1;
-		cout<<"Updated stock: "<< availableQuantity<< endl;
-		cout<<"Borrow Successful"<<endl;
-	} else
-		cout<< "Borrow Failed: Book Out of Stock"<<endl;
-	return availableQuantity;
-
-}
-int returnBook(int availableQuantity) {
-	availableQuantity=availableQuantity+1;
-	cout<<"Return Successful"<<endl;
-	return availableQuantity;
-}
-
+double calculateFine(int daysBorrowed);
+void processTransaction(int transactionType, int &bookQuantity);
 
 int main() {
-	string memberID,BookID,transactionType;
-	int borrowingDate,returnDate,availableQuantity,overdueDays;
-	double fineperDay,overduefine;
+    string memberID, bookID;
+    int transactionType, bookQuantity;
 
-	cout <<fixed <<setprecision(2);
+    cout << "Enter Member ID : ";
+    cin >> memberID;
+    cout << "Enter Book ID : ";
+    cin >> bookID;
+    cout << "Enter Available Quantity: ";
+    cin >> bookQuantity;
+    cout << "\nSelect Transaction Type (1 = Borrow, 2 = Return): ";
+    cin >> transactionType;
 
-	cout <<"Enter member ID: ";
-	cin >>memberID;
-	cout << "Enter Book ID: ";
-	cin >> BookID;
-	cout <<"Enter transaction type (Borrow/Return): ";
-	cin >>transactionType;
-	cout <<"Enter borrow date: ";
-	cin >> borrowingDate;
-	cout <<"Enter return date: ";
-	cin >>returnDate;
-	cout <<"Enter fine per day: ";
-	cin >>fineperDay;
-	cout << "Enter available quantity: ";
-	cin >>availableQuantity;
+    processTransaction(transactionType, bookQuantity);
 
-	overduefine=0.00;
+    return 0;
+}
 
+void processTransaction(int transactionType, int &bookQuantity) {
+    int daysBorrowed = 0;
+    double fine = 0.0;
 
-	if (transactionType=="Borrow") {
-		availableQuantity=borrowBook(availableQuantity);
-	} else if (transactionType=="Return") {
-		availableQuantity=returnBook(availableQuantity);
-		overdueDays=calculateoverduedays(returnDate,borrowingDate);
-		overduefine = overdueDays*fineperDay;
-	} else {
-		cout <<"Invalid transaction type."<<endl;
-	}
-	cout <<"Updated Book Quantity: "<<availableQuantity<<endl;
-	cout <<"Overdue Fine: RM" << overduefine<<endl;
+    if (transactionType == 1) { 
+        if (bookQuantity > 0) {
+            bookQuantity--;
+            cout << "Status             : Borrowing Successful" << endl;
+            cout << "Updated Quantity   : " << bookQuantity << endl;
+            cout << "Overdue Fine       : RM 0.00" << endl;
+        } else {
+            cout << "Status             : Failed (Book Out of Stock)" << endl;
+            cout << "Updated Quantity   : " << bookQuantity << endl;
+        }
+    } 
+    else if (transactionType == 2) { 
+        cout << "Enter Number of Days Borrowed: ";
+        cin >> daysBorrowed;
+        bookQuantity++;
+        fine = calculateFine(daysBorrowed);
+        cout << "\nStatus             : Return Successful" << endl;
+        cout << "Updated Quantity   : " << bookQuantity << endl;
 
+        if (fine > 0) {
+            int overdueDays = daysBorrowed - 14;
+            cout << "Return Condition   : OVERDUE " << overdueDays << " day" << endl;
+            cout << "Overdue Fine       : RM " << fixed << setprecision(2) << fine << endl;
+        } else {
+            cout << "Return Condition   : On Time" << endl;
+            cout << "Overdue Fine       : RM 0.00" << endl;
+        }
+    } 
+    else {
+        cout << "Invalid Transaction Type!" << endl;
+    }
+}
 
+double calculateFine(int daysBorrowed) {
+    const double finePerDay = 1.50; 
+    const int allowedDays = 14;
 
-	return 0;
+    if (daysBorrowed >  allowedDays) {
+        int overdueDays = daysBorrowed - allowedDays;
+        return overdueDays * finePerDay;
+    }
+    
+    return 0.0;
 }
